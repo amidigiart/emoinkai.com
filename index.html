@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>emoInkAI — AI Companion for Tattoo Studios</title>
+<meta name="description" content="AI-powered companion for tattoo salons. Dual-engine verified answers about styles, aftercare, design inspiration, and client communication.">
+<meta property="og:title" content="emoInkAI — AI for Tattoo Studios">
+<meta property="og:description" content="Dual-engine AI companion for tattoo artists and studios. Style guidance, aftercare, client prep — honest answers only.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://emoinkai.com">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🖋️</text></svg>">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0808;--surface:#141010;--card:#1a1414;--border:#2a1e1e;
+  --text:#f0e8e8;--muted:#9a8888;--accent:#e11d48;--accent2:#f43f5e;
+  --gold:#fbbf24;--ink:#6366f1;--teal:#14b8a6;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-glow .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.12;animation:drift 25s ease-in-out infinite;will-change:transform;contain:strict}
+.bg-glow .orb:nth-child(1){width:450px;height:450px;background:#e11d48;top:-5%;left:15%;animation-delay:0s}
+.bg-glow .orb:nth-child(2){width:380px;height:380px;background:#6366f1;bottom:15%;right:5%;animation-delay:-8s}
+.bg-glow .orb:nth-child(3){width:320px;height:320px;background:#f43f5e;top:50%;left:55%;animation-delay:-16s}
+@keyframes drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(25px,-35px) scale(1.08)}66%{transform:translate(-18px,25px) scale(.94)}}
+
+.container{max-width:1100px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+
+nav{padding:16px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.logo{font-size:1.5rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--ink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-links a{color:var(--muted);font-size:.9rem;transition:color .2s}
+.nav-links a:hover{color:var(--accent);text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;border-radius:12px;font-weight:700;font-size:.95rem;border:none;cursor:pointer;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(225,29,72,.3)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+
+.hero{padding:80px 0 60px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:100px;background:var(--card);border:1px solid var(--border);font-size:.8rem;color:var(--accent);margin-bottom:24px}
+.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);font-weight:900;line-height:1.1;margin-bottom:20px}
+.hero h1 .gradient{background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.15rem;color:var(--muted);max-width:620px;margin:0 auto 32px}
+.hero-cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.ai-transparency{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:rgba(225,29,72,.08);border:1px solid rgba(225,29,72,.2);font-size:.75rem;color:var(--accent);margin-top:24px}
+
+.section{padding:80px 0}
+.section-title{text-align:center;font-size:2rem;font-weight:800;margin-bottom:12px}
+.section-sub{text-align:center;color:var(--muted);max-width:560px;margin:0 auto 48px}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:24px}
+.step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;text-align:center;transition:transform .2s,border-color .2s}
+.step:hover{transform:translateY(-4px);border-color:var(--accent)}
+.step-icon{font-size:2.5rem;margin-bottom:16px}
+.step h3{font-size:1.1rem;margin-bottom:8px}
+.step p{color:var(--muted);font-size:.9rem}
+
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.feature{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px}
+.feature-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.feature-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.feature h3{font-size:1rem}
+.feature p{color:var(--muted);font-size:.88rem}
+
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:750px;margin:0 auto}
+.plan{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px 28px;position:relative;transition:transform .2s}
+.plan:hover{transform:translateY(-4px)}
+.plan.popular{border-color:var(--accent);box-shadow:0 0 40px rgba(225,29,72,.1)}
+.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:.75rem;font-weight:800;padding:4px 16px;border-radius:100px}
+.plan h3{font-size:1.3rem;margin-bottom:4px}
+.plan .price{font-size:2.8rem;font-weight:900;margin:16px 0 4px}
+.plan .price span{font-size:1rem;font-weight:400;color:var(--muted)}
+.plan .period{color:var(--muted);font-size:.85rem;margin-bottom:24px}
+.plan ul{list-style:none;margin-bottom:28px}
+.plan li{padding:8px 0;font-size:.9rem;color:var(--muted);display:flex;align-items:start;gap:10px}
+.plan li::before{content:"✓";color:var(--accent);font-weight:700;flex-shrink:0}
+.plan .btn{width:100%;justify-content:center}
+
+.compliance{background:var(--surface);border-radius:20px;padding:48px 36px;margin-top:40px}
+.compliance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px}
+.compliance-item h3{font-size:1rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.compliance-item p{color:var(--muted);font-size:.85rem;line-height:1.7}
+
+.chat-section{background:var(--surface);border-radius:20px;padding:48px 36px}
+.chat-container{max-width:600px;margin:0 auto}
+.chat-messages{min-height:120px;max-height:350px;overflow-y:auto;margin-bottom:16px;padding:8px 0}
+.chat-bubble{padding:12px 18px;border-radius:16px;margin-bottom:10px;font-size:.92rem;max-width:85%;animation:fadeIn .3s ease}
+.chat-bubble.user{background:rgba(225,29,72,.15);border:1px solid rgba(225,29,72,.2);margin-left:auto;text-align:right}
+.chat-bubble.bot{background:var(--card);border:1px solid var(--border)}
+.chat-bubble .meta{font-size:.7rem;color:var(--muted);margin-top:6px}
+.chat-bubble .engine-tag{color:var(--accent);font-weight:600}
+.chat-input-row{display:flex;gap:10px}
+.chat-input-row input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;color:var(--text);font-size:.9rem;outline:none}
+.chat-input-row input:focus{border-color:var(--accent)}
+.chat-input-row button{padding:14px 24px;border-radius:12px}
+.chat-status{font-size:.75rem;color:var(--muted);margin-top:10px;text-align:center}
+.chat-limit{font-size:.8rem;color:var(--accent2);text-align:center;margin-top:8px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+footer{padding:48px 0 32px;border-top:1px solid var(--border);margin-top:80px}
+.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;margin-bottom:32px}
+.footer-col h4{font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:12px}
+.footer-col a{display:block;color:var(--muted);font-size:.85rem;padding:4px 0}
+.footer-col a:hover{color:var(--text)}
+.footer-bottom{text-align:center;color:var(--muted);font-size:.8rem;padding-top:24px;border-top:1px solid var(--border)}
+
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:20px 24px;z-index:1000;display:none;animation:slideUp .3s ease}
+.cookie-banner.show{display:block}
+.cookie-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.cookie-text{flex:1;min-width:300px;font-size:.85rem;color:var(--muted)}
+.cookie-btns{display:flex;gap:10px}
+.cookie-btns button{padding:8px 20px;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;border:none}
+.cookie-accept{background:var(--accent);color:#fff}
+.cookie-reject{background:var(--card);color:var(--text);border:1px solid var(--border)!important}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:700px;width:100%;max-height:80vh;overflow-y:auto;padding:36px}
+.modal h2{font-size:1.5rem;margin-bottom:20px}
+.modal h3{font-size:1.1rem;margin:20px 0 8px;color:var(--accent)}
+.modal p,.modal li{font-size:.88rem;color:var(--muted);line-height:1.8}
+.modal ul{padding-left:20px}
+.modal-close{position:sticky;top:0;float:right;background:var(--card);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+@media(max-width:768px){
+  .hero{padding:50px 0 40px}
+  .section{padding:50px 0}
+  .chat-section,.compliance{padding:28px 20px}
+  .modal{padding:24px}
+  nav{padding:12px 0}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
+
+<div class="container">
+  <nav>
+    <div class="logo">🖋️ emoInkAI</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#chat">Try it</a>
+      <a href="#" onclick="openModal('privacy');return false">Privacy</a>
+      <button class="btn btn-primary" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Get Started</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge">🔬 Dual-Engine Verified · EU AI Act Compliant</div>
+    <h1>Your tattoo studio's<br><span class="gradient">AI-powered ally</span></h1>
+    <p>Instant answers on tattoo styles, aftercare protocols, design inspiration, and client communication. Two AI engines cross-verify every answer — ink knowledge you can trust.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})">Try free — no account needed</button>
+      <button class="btn btn-outline" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">How it works</button>
+    </div>
+    <div class="ai-transparency">
+      🤖 AI System Transparency: Responses generated by Grok + DeepSeek dual engine · <a href="#" onclick="openModal('ai-act');return false">Learn more</a>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <h2 class="section-title">How it works</h2>
+    <p class="section-sub">Two AI models answer independently. If they agree, you get the answer. If not, we tell you honestly.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon">🎨</div>
+        <h3>Ask anything tattoo</h3>
+        <p>Styles, techniques, aftercare, ink types, placement advice, client prep, design references.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">🔬</div>
+        <h3>Dual verification</h3>
+        <p>Grok and DeepSeek answer independently. Concordance algorithm checks agreement.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">✅</div>
+        <h3>Honest answer</h3>
+        <p>Agreed? Delivered. Disagreed? We say so — no hallucinated confidence about your craft.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <h2 class="section-title">Built for tattoo pros</h2>
+    <p class="section-sub">Every feature designed to support your studio workflow.</p>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-header">
+          <div class="feature-icon" style="background:rgba(225,29,72,.15)">🖋️</div>
+          <h3>Style encyclopedia</h3>
+        </div>
+        <p>Traditional, neo-trad, Japanese, blackwork, fine line, watercolor, tribal, geometric, realism — deep knowledge across all major styles.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-header">
+          <div class="feature-icon" style="background:rgba(251,191,36,.15)">🩹</div>
+          <h3>Aftercare guidance</h3>
+        </div>
+        <p>Evidence-based healing protocols, common issues, when to refer to medical professionals. Cross-verified for accuracy.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-header">
+          <div class="feature-icon" style="background:rgba(99,102,241,.15)">💬</div>
+          <h3>Client communication</h3>
+        </div>
+        <p>Help drafting consultation responses, managing expectations, explaining processes to first-timers.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-header">
+          <div class="feature-icon" style="background:rgba(20,184,166,.15)">🛡️</div>
+          <h3>Anti-confabulation engine</h3>
+        </div>
+        <p>Two models must agree before delivering an answer. If they disagree about techniques or safety, you get an honest refusal.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-header">
+          <div class="feature-icon" style="background:rgba(225,29,72,.15)">🌍</div>
+          <h3>Multilingual</h3>
+        </div>
+        <p>Communicate with international clients — AI detects language and responds accordingly.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-header">
+          <div class="feature-icon" style="background:rgba(251,191,36,.15)">⚕️</div>
+          <h3>Safety-first</h3>
+        </div>
+        <p>Medical disclaimers built in. Allergic reactions, infections, or complications always get "see a doctor" — never guesswork.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="pricing">
+    <h2 class="section-title">Simple pricing</h2>
+    <p class="section-sub">Start free, upgrade when your studio needs more.</p>
+    <div class="pricing-grid">
+      <div class="plan">
+        <h3>Free</h3>
+        <div class="price">€0 <span>forever</span></div>
+        <div class="period">No credit card required</div>
+        <ul>
+          <li>5 questions per day</li>
+          <li>Dual-engine verified answers</li>
+          <li>Style & aftercare guidance</li>
+          <li>Safety disclaimers included</li>
+          <li>No account needed</li>
+        </ul>
+        <button class="btn btn-outline" style="width:100%;justify-content:center" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})">Start free</button>
+      </div>
+      <div class="plan popular">
+        <div class="plan-badge">FOR STUDIOS</div>
+        <h3>Pro</h3>
+        <div class="price">€9.99 <span>/month</span></div>
+        <div class="period">Cancel anytime · VAT included</div>
+        <ul>
+          <li>Unlimited questions</li>
+          <li>Dual-engine verified answers</li>
+          <li>Client communication drafts</li>
+          <li>Advanced style references</li>
+          <li>Priority response time</li>
+          <li>Multi-artist studio use</li>
+          <li>Email support</li>
+        </ul>
+        <button class="btn btn-primary" id="proBuyBtn" onclick="handleProPurchase()">Upgrade to Pro</button>
+      </div>
+    </div>
+
+    <div class="compliance" style="margin-top:40px">
+      <div class="compliance-grid">
+        <div class="compliance-item">
+          <h3>🇪🇺 EU AI Act (Regulation 2024/1689)</h3>
+          <p>emoInkAI is a <strong>limited-risk AI system</strong>. We comply with Art. 50 transparency: users know they interact with AI, models are disclosed, limitations stated. Not a medical device. <a href="#" onclick="openModal('ai-act');return false">Full transparency →</a></p>
+        </div>
+        <div class="compliance-item">
+          <h3>🔒 GDPR (Regulation 2016/679)</h3>
+          <p>Minimal data. Chat processed real-time, <strong>not stored</strong>. Payments via Stripe (PCI-DSS L1). Right to access, rectify, delete anytime. <a href="#" onclick="openModal('privacy');return false">Privacy policy →</a></p>
+        </div>
+        <div class="compliance-item">
+          <h3>⚕️ Health disclaimer</h3>
+          <p>emoInkAI provides <strong>informational content only</strong>. For allergic reactions, infections, or complications — always consult a medical professional. We are not a substitute for medical advice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="chat">
+    <h2 class="section-title">Try it now</h2>
+    <p class="section-sub">5 free questions per day — no account, no credit card.</p>
+    <div class="chat-section">
+      <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-bubble bot">
+            Hey! I'm emoInkAI, your tattoo studio companion. Ask me about styles, aftercare, design ideas, client communication, or anything ink-related. Every answer is cross-verified by two AI engines.
+            <div class="meta">🤖 AI-generated · <span class="engine-tag">system</span></div>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Ask about styles, aftercare, techniques..." maxlength="500" autocomplete="off">
+          <button class="btn btn-primary" id="chatSendBtn" onclick="sendChat()">→</button>
+        </div>
+        <p class="chat-status" id="chatStatus"></p>
+        <p class="chat-limit" id="chatLimit"></p>
+        <p style="font-size:.7rem;color:var(--muted);text-align:center;margin-top:12px">
+          🤖 AI-generated content · Not medical advice · <a href="#" onclick="openModal('ai-act');return false">AI transparency</a> ·
+          <a href="#" onclick="openModal('privacy');return false">Privacy policy</a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#chat">Try free</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#" onclick="openModal('privacy');return false">Privacy Policy</a>
+        <a href="#" onclick="openModal('terms');return false">Terms of Service</a>
+        <a href="#" onclick="openModal('ai-act');return false">AI Transparency</a>
+        <a href="#" onclick="openModal('imprint');return false">Imprint</a>
+      </div>
+      <div class="footer-col">
+        <h4>Your rights (GDPR)</h4>
+        <a href="mailto:privacy@emoinkai.com">Request data export</a>
+        <a href="mailto:privacy@emoinkai.com">Request data deletion</a>
+        <a href="mailto:privacy@emoinkai.com">Withdraw consent</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:hello@emoinkai.com">hello@emoinkai.com</a>
+        <a href="mailto:privacy@emoinkai.com">privacy@emoinkai.com</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2025 emoInkAI. All rights reserved. Made with 🖋️ in Timi&scedil;oara, Romania.<br>
+      <a href="#" onclick="openModal('ai-act');return false">EU AI Act Transparency</a> ·
+      <a href="#" onclick="openModal('privacy');return false">Privacy</a> ·
+      <a href="#" onclick="openModal('terms');return false">Terms</a>
+    </div>
+  </footer>
+</div>
+
+<!-- Cookie Banner -->
+<div class="cookie-banner" id="cookieBanner">
+  <div class="cookie-inner">
+    <div class="cookie-text">
+      We use only <strong>essential cookies</strong> (session, consent). No tracking, analytics, or ads.
+      <a href="#" onclick="openModal('privacy');return false">Privacy Policy</a>
+    </div>
+    <div class="cookie-btns">
+      <button class="cookie-reject" onclick="cookieConsent(false)">Reject non-essential</button>
+      <button class="cookie-accept" onclick="cookieConsent(true)">Accept essential only</button>
+    </div>
+  </div>
+</div>
+
+<!-- Privacy Modal -->
+<div class="modal-overlay" id="modal-privacy">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('privacy')">✕</button>
+    <h2>Privacy Policy</h2>
+    <p><strong>Last updated:</strong> July 2026 · <strong>Controller:</strong> emoInkAI, Timișoara, Romania · <strong>Contact:</strong> privacy@emoinkai.com</p>
+    <h3>1. What data we process</h3>
+    <ul>
+      <li><strong>Chat messages:</strong> Processed in real-time by AI engines (Grok by xAI, DeepSeek). NOT stored on our servers.</li>
+      <li><strong>IP address:</strong> Rate limiting only. Not logged beyond active session.</li>
+      <li><strong>Payment data (Pro):</strong> Exclusively by Stripe (PCI-DSS Level 1). We store only Stripe customer ID + email.</li>
+      <li><strong>Consent preference:</strong> localStorage in your browser.</li>
+    </ul>
+    <h3>2. Legal basis (GDPR Art. 6)</h3>
+    <ul>
+      <li><strong>Contract performance</strong> (Art. 6(1)(b)): Chat processing.</li>
+      <li><strong>Legitimate interest</strong> (Art. 6(1)(f)): Rate limiting, security.</li>
+      <li><strong>Consent</strong> (Art. 6(1)(a)): Non-essential processing (currently none).</li>
+    </ul>
+    <h3>3. Data processors</h3>
+    <ul>
+      <li><strong>xAI (Grok):</strong> USA. SCCs.</li>
+      <li><strong>DeepSeek:</strong> China. SCCs + supplementary measures.</li>
+      <li><strong>Stripe:</strong> PCI-DSS L1. USA/Ireland. EU data in EU.</li>
+      <li><strong>Railway:</strong> USA. SCCs.</li>
+      <li><strong>GitHub (Microsoft):</strong> USA. EU-US DPF.</li>
+    </ul>
+    <h3>4. Your rights (GDPR Art. 15-22)</h3>
+    <p>Access, Rectification, Erasure, Restriction, Portability, Objection, No automated decisions with legal effect. Email <a href="mailto:privacy@emoinkai.com">privacy@emoinkai.com</a>. Response within 30 days. Complaint to ANSPDCP or your local DPA.</p>
+    <h3>5. Data retention</h3>
+    <ul><li>Chat: not retained</li><li>Rate limit: 60s</li><li>Subscription: until deletion or 30 days post-cancel</li></ul>
+    <h3>6. Children</h3>
+    <p>Not intended for persons under 16.</p>
+  </div>
+</div>
+
+<!-- Terms Modal -->
+<div class="modal-overlay" id="modal-terms">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('terms')">✕</button>
+    <h2>Terms of Service</h2>
+    <p><strong>Last updated:</strong> July 2026</p>
+    <h3>1. Service</h3>
+    <p>emoInkAI is an AI companion for tattoo professionals. Dual-engine (Grok + DeepSeek) cross-verified answers about tattoo styles, aftercare, techniques, and client communication.</p>
+    <h3>2. Not medical advice</h3>
+    <p><strong>emoInkAI does NOT provide medical advice.</strong> For allergic reactions, infections, or skin conditions, always refer clients to a medical professional.</p>
+    <h3>3. Subscriptions</h3>
+    <ul><li>Free: 5 questions/day</li><li>Pro: €9.99/month (VAT included), via Stripe</li><li>Cancel anytime. 14-day cooling-off per EU Consumer Rights Directive</li></ul>
+    <h3>4. Governing law</h3>
+    <p>Romanian law. Courts of Timișoara, without prejudice to EU consumer rights.</p>
+  </div>
+</div>
+
+<!-- AI Act Modal -->
+<div class="modal-overlay" id="modal-ai-act">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('ai-act')">✕</button>
+    <h2>AI System Transparency Notice</h2>
+    <p><strong>Per EU AI Act (Regulation 2024/1689), Article 50</strong></p>
+    <h3>System identification</h3>
+    <ul><li><strong>System:</strong> emoInkAI Companion</li><li><strong>Provider:</strong> emoInkAI, Timișoara, Romania</li><li><strong>Risk:</strong> Limited-risk (transparency obligations)</li><li><strong>Purpose:</strong> AI companion for tattoo studio professionals</li></ul>
+    <h3>AI models</h3>
+    <ul><li><strong>Grok</strong> (xAI) — general-purpose LLM</li><li><strong>DeepSeek</strong> — general-purpose LLM</li><li><strong>Architecture:</strong> Dual-engine anti-confabulation. Concordance ≥ 0.45 + no numeric conflict = delivered. Otherwise honest refusal.</li></ul>
+    <h3>Limitations</h3>
+    <ul><li>May produce incorrect information despite dual verification</li><li>Cannot replace professional training or medical advice</li><li>Training cutoff — may not reflect latest techniques/products</li></ul>
+    <h3>Contact</h3>
+    <p><a href="mailto:hello@emoinkai.com">hello@emoinkai.com</a></p>
+  </div>
+</div>
+
+<!-- Imprint Modal -->
+<div class="modal-overlay" id="modal-imprint">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('imprint')">✕</button>
+    <h2>Imprint</h2>
+    <p><strong>Service provider:</strong> emoInkAI</p>
+    <p><strong>Representative:</strong> Mihai Roșca</p>
+    <p><strong>Address:</strong> Timișoara, Romania</p>
+    <p><strong>Email:</strong> <a href="mailto:hello@emoinkai.com">hello@emoinkai.com</a></p>
+    <p><strong>Privacy:</strong> <a href="mailto:privacy@emoinkai.com">privacy@emoinkai.com</a></p>
+  </div>
+</div>
+
+<script>
+const API_BASE = 'https://emoinkai-api-production.up.railway.app';
+const FREE_LIMIT = 5;
+const STORAGE_KEY = 'emoinkai_usage';
+const CONSENT_KEY = 'emoinkai_consent';
+const PRO_KEY = 'emoinkai_pro';
+
+function cookieConsent(accept) {
+  localStorage.setItem(CONSENT_KEY, accept ? 'essential' : 'rejected');
+  document.getElementById('cookieBanner').classList.remove('show');
+}
+(function() {
+  if (!localStorage.getItem(CONSENT_KEY)) {
+    setTimeout(() => document.getElementById('cookieBanner').classList.add('show'), 1500);
+  }
+})();
+
+function openModal(name) { document.getElementById('modal-' + name).classList.add('show'); }
+function closeModal(name) { document.getElementById('modal-' + name).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('show'); });
+});
+
+function getUsageToday() {
+  const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  const today = new Date().toISOString().slice(0, 10);
+  if (data.date !== today) return { date: today, count: 0 };
+  return data;
+}
+function incrementUsage() {
+  const u = getUsageToday();
+  u.count++;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
+  return u.count;
+}
+function isPro() { return localStorage.getItem(PRO_KEY) === 'active'; }
+function updateLimitDisplay() {
+  const el = document.getElementById('chatLimit');
+  if (isPro()) { el.textContent = ''; return; }
+  const u = getUsageToday();
+  const rem = Math.max(0, FREE_LIMIT - u.count);
+  el.textContent = rem > 0 ? `${rem} free question${rem !== 1 ? 's' : ''} remaining today` : 'Daily limit reached — upgrade to Pro for unlimited';
+  el.style.color = rem > 0 ? 'var(--muted)' : 'var(--accent2)';
+}
+
+let chatBusy = false;
+function addBubble(text, type, meta) {
+  const div = document.createElement('div');
+  div.className = 'chat-bubble ' + type;
+  div.innerHTML = text.replace(/\n/g, '<br>');
+  if (meta) div.innerHTML += `<div class="meta">${meta}</div>`;
+  document.getElementById('chatMessages').appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+
+async function sendChat() {
+  if (chatBusy) return;
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  if (!isPro()) {
+    const u = getUsageToday();
+    if (u.count >= FREE_LIMIT) {
+      addBubble('Daily limit reached. <a href="#pricing" style="color:var(--accent)">Upgrade to Pro</a> for unlimited.', 'bot', '🔒 limit');
+      return;
+    }
+  }
+  chatBusy = true;
+  input.value = '';
+  addBubble(msg, 'user');
+  document.getElementById('chatStatus').textContent = '🔬 Cross-verifying with dual engine...';
+  document.getElementById('chatSendBtn').disabled = true;
+  try {
+    const res = await fetch(API_BASE + '/companion/ink/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg, locale: 'en' })
+    });
+    if (res.status === 429) { addBubble('Too many requests. Wait a moment.', 'bot', '⚠️ rate limited'); return; }
+    const data = await res.json();
+    let metaHtml = '🤖 AI-generated · ';
+    metaHtml += `<span class="engine-tag">${data.engine}</span>`;
+    if (data.concordance !== null && data.concordance !== undefined) metaHtml += ` · concordance: ${data.concordance}`;
+    metaHtml += ` · ${data.decision} · ${data.latency_s || 0}s`;
+    const disc = data.is_crisis_response ? '' : '<br><em style="font-size:.75rem;color:var(--muted)">ℹ️ Informational only — not medical advice</em>';
+    addBubble(data.response + disc, 'bot', metaHtml);
+    if (!isPro()) { incrementUsage(); updateLimitDisplay(); }
+  } catch (e) { addBubble('Connection error. Please try again.', 'bot', '⚠️ error'); }
+  finally { chatBusy = false; document.getElementById('chatStatus').textContent = ''; document.getElementById('chatSendBtn').disabled = false; }
+}
+document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } });
+
+async function handleProPurchase() {
+  const btn = document.getElementById('proBuyBtn');
+  btn.textContent = 'Redirecting to Stripe...';
+  btn.disabled = true;
+  try {
+    const res = await fetch(API_BASE + '/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+    const data = await res.json();
+    if (data.url) window.location.href = data.url;
+    else throw new Error('No URL');
+  } catch (e) {
+    btn.textContent = 'Upgrade to Pro';
+    btn.disabled = false;
+    alert('Payment system is being configured. Contact hello@emoinkai.com');
+  }
+}
+
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('payment') === 'success') {
+    localStorage.setItem(PRO_KEY, 'active');
+    history.replaceState({}, '', window.location.pathname);
+    setTimeout(() => addBubble('🎉 Welcome to Pro! Unlimited questions unlocked. Ask me anything about tattoo art.', 'bot', '✨ pro'), 500);
+  }
+  if (params.get('payment') === 'cancelled') history.replaceState({}, '', window.location.pathname);
+  updateLimitDisplay();
+})();
+</script>
+</body>
+</html>
